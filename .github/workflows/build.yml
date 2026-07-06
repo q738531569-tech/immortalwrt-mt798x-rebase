@@ -3,7 +3,7 @@ name: Build ImmortalWrt
 on:
   workflow_dispatch:
   push:
-    branches: [ "25.12-dev" ]
+    branches: [ "25.12" ]
 
 jobs:
   build:
