@@ -35,7 +35,7 @@ jobs:
       - name: Configure firmware
         run: |
           export MTK_WIFI_VERSION=20260601
-          cp -f defconfig/mt7981-ax3000.config .config
+          cp -f configs/rax3000m-emmc.config .config
           make defconfig
 
       - name: Download package sources
@@ -50,4 +50,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: immortalwrt-firmware
-          path: bin/targets/mediatek/
+          path: bin/targets/mediatek/filogic/
