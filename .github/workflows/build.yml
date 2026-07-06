@@ -9,22 +9,38 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          df -h
+
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
       - name: Initialization environment
         run: |
           sudo apt update
           sudo apt install -y build-essential libncurses5-dev gawk git libssl-dev gettext zlib1g-dev swig unzip time rsync python3 python3-pip
 
+      - name: Update feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
       - name: Configure firmware
         run: |
+          export MTK_WIFI_VERSION=20260601
           cp -f defconfig/mt7981-ax3000.config .config
           make defconfig
 
       - name: Download package sources
         run: |
-          make download -j8
+          make download -j8 || make download -j1 || make download -j1
 
       - name: Build firmware
         run: |
