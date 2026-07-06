@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: immortalwrt-firmware
-          path: bin/targets/mediatek/mt7981/*.bin
+          path: bin/targets/mediatek/mt7981/
