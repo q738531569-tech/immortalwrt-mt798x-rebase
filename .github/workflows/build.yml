@@ -50,13 +50,25 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: immortalwrt-firmware
-          path: bin/targets/mediatek/filogic/
+          path: |
+            bin/targets/mediatek/filogic/*rax3000m*sysupgrade*
+            bin/targets/mediatek/filogic/*rax3000m-emmc-bl31-uboot*
+            bin/targets/mediatek/filogic/*rax3000m-emmc-preloader*
+            bin/targets/mediatek/filogic/*rax3000m-emmc-gpt*
+            bin/targets/mediatek/filogic/*rax3000m-initramfs*
+            bin/targets/mediatek/filogic/sha256sums
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}-${{ github.run_number }}
           name: ImmortalWrt ${{ github.ref_name }} build ${{ github.run_number }}
-          files: bin/targets/mediatek/filogic/*sysupgrade*
+          files: |
+            bin/targets/mediatek/filogic/*rax3000m*sysupgrade*
+            bin/targets/mediatek/filogic/*rax3000m-emmc-bl31-uboot*
+            bin/targets/mediatek/filogic/*rax3000m-emmc-preloader*
+            bin/targets/mediatek/filogic/*rax3000m-emmc-gpt*
+            bin/targets/mediatek/filogic/*rax3000m-initramfs*
+            bin/targets/mediatek/filogic/sha256sums
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
