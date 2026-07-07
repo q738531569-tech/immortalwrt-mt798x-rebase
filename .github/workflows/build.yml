@@ -51,3 +51,12 @@ jobs:
         with:
           name: immortalwrt-firmware
           path: bin/targets/mediatek/filogic/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}-${{ github.run_number }}
+          name: ImmortalWrt ${{ github.ref_name }} build ${{ github.run_number }}
+          files: bin/targets/mediatek/filogic/*sysupgrade*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
