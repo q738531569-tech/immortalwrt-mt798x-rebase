@@ -41,9 +41,9 @@ jobs:
           key: ${{ runner.os }}-dl-${{ hashFiles('feeds.conf') }}
           restore-keys: ${{ runner.os }}-dl-
 
-      - name: Config (use existing .config)
+      - name: Configure firmware
         run: |
-          cp .config .config.backup  # 备份
+          cp -f config/rax3000m-emmc.config .config
           make defconfig
 
       - name: Build
