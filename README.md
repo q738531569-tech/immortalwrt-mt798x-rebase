@@ -15,7 +15,7 @@
 
 ## 构建
 
-GitHub Actions 自动构建，推送到 `25.12` 分支触发。配置文件位于 `桌面/rax3000m-emmc.config`。
+GitHub Actions 自动构建，推送到 `25.12` 分支触发。
 
 ## Commit Cutoff Revisions
 
