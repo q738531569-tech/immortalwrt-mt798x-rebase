@@ -26,9 +26,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.ccache
-          key: ccache-${{ github.ref_name }}-${{ github.run_number }}
-          restore-keys: |
-            ccache-${{ github.ref_name }}-
+          key: ccache-25.12
+          restore-keys: ccache-25.12
 
       - name: Initialization environment
         run: |
