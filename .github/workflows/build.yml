@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: 'false'
 
       - name: Initialization environment
         run: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Build firmware
         run: |
-          make -j$(nproc) V=s || make -j1 V=s
+          make -j$(nproc) V=sc || make -j1 V=sc
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
