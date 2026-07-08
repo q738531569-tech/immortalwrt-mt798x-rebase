@@ -1,86 +1,57 @@
 name: Build ImmortalWrt
 
 on:
-  workflow_dispatch:
   push:
     branches: [ "25.12" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          df -h
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: 'false'
+          fetch-depth: 0
+          submodules: recursive
 
-      - name: Cache ccache
-        uses: actions/cache@v4
-        with:
-          path: ~/.ccache
-          key: ccache-25.12
-          restore-keys: ccache-25.12
-
-      - name: Initialization environment
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential libncurses5-dev gawk git libssl-dev gettext zlib1g-dev swig unzip time rsync python3 python3-pip ccache
-          ccache -M 2G
-          ccache -s
+          sudo apt install -y build-essential ccache ecj fastjar file g++ gawk \
+          gettext git java-propose-classpath libelf-dev libncurses-dev \
+          libssl-dev make patch python3 python3-pip python3-ply python3-setuptools \
+          unzip wget zlib1g-dev
+
+      - name: Cache feeds
+        uses: actions/cache@v3
+        with:
+          path: feeds
+          key: ${{ runner.os }}-feeds-${{ hashFiles('feeds.conf') }}
 
       - name: Update feeds
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Configure firmware
+      - name: Cache download
+        uses: actions/cache@v3
+        with:
+          path: dl
+          key: ${{ runner.os }}-dl-${{ hashFiles('feeds.conf') }}
+          restore-keys: ${{ runner.os }}-dl-
+
+      - name: Config (use existing .config)
         run: |
-          export MTK_WIFI_VERSION=20260601
-          cp -f config/rax3000m-emmc.config .config
+          cp .config .config.backup  # 备份
           make defconfig
 
-      - name: Download package sources
+      - name: Build
         run: |
-          make download -j8 || make download -j1 || make download -j1
-
-      - name: Build firmware
-        run: |
-          export PATH="/usr/lib/ccache:$PATH"
-          ccache -z
-          make -j$(nproc) V=sc || make -j1 V=sc
-          ccache -s
+          make -j$(nproc) V=s
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: immortalwrt-firmware
-          path: |
-            bin/targets/mediatek/filogic/*rax3000m*sysupgrade*
-            bin/targets/mediatek/filogic/*rax3000m-emmc-bl31-uboot*
-            bin/targets/mediatek/filogic/*rax3000m-emmc-preloader*
-            bin/targets/mediatek/filogic/*rax3000m-emmc-gpt*
-            bin/targets/mediatek/filogic/*rax3000m-initramfs*
-            bin/targets/mediatek/filogic/sha256sums
-
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}-${{ github.run_number }}
-          name: ImmortalWrt ${{ github.ref_name }} build ${{ github.run_number }}
-          files: |
-            bin/targets/mediatek/filogic/*rax3000m*sysupgrade*
-            bin/targets/mediatek/filogic/*rax3000m-emmc-bl31-uboot*
-            bin/targets/mediatek/filogic/*rax3000m-emmc-preloader*
-            bin/targets/mediatek/filogic/*rax3000m-emmc-gpt*
-            bin/targets/mediatek/filogic/*rax3000m-initramfs*
-            bin/targets/mediatek/filogic/sha256sums
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: bin/targets/mediatek/filogic/
