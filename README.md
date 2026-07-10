@@ -25,4 +25,4 @@ GitHub Actions 自动构建，推送到 `25.12` 分支触发。
 
 ## Acknowledgements
 
-HNAT external device support adapted from [Padavanonly's repo](https://github.com/padavanonly/immortalwrt-mt798x-6.6).
+HNAT external device support adapted from [shiyu1314](https://github.com/shiyu1314/).
