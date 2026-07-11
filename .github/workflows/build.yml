@@ -8,6 +8,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,23 +54,21 @@ jobs:
         run: |
           make -j$(nproc) V=s
 
-      # ---------- 新增：上传到 Artifact（可选，保留用于调试） ----------
       - name: Upload firmware as artifact
         uses: actions/upload-artifact@v4
         with:
           name: immortalwrt-firmware
           path: bin/targets/mediatek/filogic/
 
-      # ---------- 新增：创建/更新 GitHub Release（滚动版本） ----------
       - name: Create or update rolling release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         with:
-          tag_name: rolling                 # 固定标签，每次构建覆盖
-          name: Rolling Release             # 发布标题
-          prerelease: true                  # 标记为预发布，便于识别
-          allow_updates: true               # 允许更新已存在的 release
+          tag_name: rolling
+          name: Rolling Release
+          prerelease: true
+          fail_on_unmatched_files: false
           files: |
-            bin/targets/mediatek/filogic/*  # 上传该目录下所有文件
+            bin/targets/mediatek/filogic/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
