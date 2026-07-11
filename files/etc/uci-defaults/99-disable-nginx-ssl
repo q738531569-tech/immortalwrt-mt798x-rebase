@@ -1,0 +1,4 @@
+#!/bin/sh
+# Remove auto-generated SSL listen on 443
+sed -i '/443 ssl/d' /etc/nginx/conf.d/*.listen 2>/dev/null
+/etc/init.d/nginx restart 2>/dev/null
