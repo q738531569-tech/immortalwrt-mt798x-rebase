@@ -34,13 +34,12 @@ git clone https://github.com/q738531569-tech/immortalwrt-mt798x-rebase.git
 cd immortalwrt-mt798x-rebase
 ./scripts/feeds update -a && ./scripts/feeds install -a
 
-# 从参考配置出发
-cp defconfig/mt7981-ax3000.config .config
-make defconfig
+# 已预置配置文件
+.config
 make menuconfig  # 按需调整
 
-# 编译 (闭源驱动建议单核避免竞态)
-make -j1 V=s
+# 编译 (此脚本会执行多核编译，如果失败，自动转单核编译，单核编译失败自动停止)
+./build_loop.sh
 ```
 
 产物在 `bin/targets/mediatek/filogic/`。
@@ -76,7 +75,7 @@ dd if=/tmp/initramfs-recovery.itb of=/dev/mmcblk0p4 bs=512
 dd if=/tmp/squashfs-sysupgrade.itb of=/dev/mmcblk0p5 bs=1M
 
 # 6. 重启
-rm -f /sys/fs/pstore/*
+rm -f /sys/fs/pstore/* # 重要，如果rec刷了固件，但是进不了系统默认进rec，或循环重启也要执行这条
 reboot
 ```
 
@@ -120,14 +119,6 @@ for svc in radius avahi-daemon filebrowser qbittorrent; do
     /etc/init.d/$svc stop
     /etc/init.d/$svc disable
 done
-```
-
-### 外接硬盘休眠
-
-```bash
-apk add hdparm
-hdparm -S 120 -B 255 /dev/sda    # 10 分钟无活动停转
-echo 'hdparm -S 120 -B 255 /dev/sda' >> /etc/rc.local
 ```
 
 ### nginx 添加自定义站点
