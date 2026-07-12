@@ -73,7 +73,9 @@ define Build/mt798x-gpt
 			-t 0x2e -N production		-p $(CONFIG_TARGET_ROOTFS_PARTSIZE)M@108M \
 		) \
 		$(if $(findstring emmc,$1), \
+			-d 59632M \
 			-t 0x2e -N production		-p $(CONFIG_TARGET_ROOTFS_PARTSIZE)M@108M \
+			-t 0x83 -N primary		-p $(shell expr 59632 - 108 - $(CONFIG_TARGET_ROOTFS_PARTSIZE) - 1)M@$(shell expr 108 + $(CONFIG_TARGET_ROOTFS_PARTSIZE))M \
 		)
 	cat $@.tmp >> $@
 	rm $@.tmp
