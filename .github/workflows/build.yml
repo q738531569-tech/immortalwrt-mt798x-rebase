@@ -50,6 +50,14 @@ jobs:
           cp -f config/rax3000m-emmc.config .config
           make defconfig
 
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache
+          sudo docker rmi $(docker images -q) 2>/dev/null || true
+          sudo rm -rf /swapfile 2>/dev/null || true
+          df -h
+
       - name: Build
         run: |
           make -j$(nproc) V=s
